@@ -9,3 +9,5 @@
 #define HISTORY_LEN 100
 
 // TODO: Your function prototypes below
+
+char** split(char *str, char *delim);
