@@ -10,4 +10,4 @@
 
 // TODO: Your function prototypes below
 
-char** split(char *str, char *delim);
+char** split(char *str, char *delim, int *numOfWords);
