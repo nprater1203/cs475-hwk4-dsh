@@ -147,7 +147,8 @@ int main(int argc, char **argv)
 					execv(path,terms);
 				}
 				else if(strcmp(terms[0],"gcc") == 0){
-
+					char* path = "/bin/gcc";
+					execv(path,terms);
 				}
 				else
 				{
