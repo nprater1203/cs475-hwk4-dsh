@@ -28,7 +28,7 @@ char** split(char *str, char *delim, int* numOfWords)
     int i = 0;
     while(temp[i] != '\0')
     {
-        printf("IS DELIM? -- %c\n", temp[i]);
+        //printf("IS DELIM? -- %c\n", temp[i]);
         if(temp[i] == *delim)
         {
             numTokens++;
