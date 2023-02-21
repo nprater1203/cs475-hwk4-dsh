@@ -44,30 +44,33 @@ char** split(char *str, char *delim, int* numOfWords)
 
    *numOfWords = numTokens;
 
-   //printf("NumTokens = %d", numTokens);
+//    printf("NumTokens = %d\n", numTokens);
 
-    char** split2DArray = (char**) malloc(numTokens+1 * sizeof(char*));
+//    printf("Size of char*  = %ld\n", sizeof(char*));
+//    printf("Size of char  = %ld\n", sizeof(char));
 
-    for(i = 0; i <= numTokens; i++)
+
+    char** split2DArray = (char**) malloc((numTokens+1) * sizeof(char*));
+
+    for(i = 0; i < numTokens+1; i++)
     {
         //printf("%d\n", i);
-        split2DArray[i] = (char*) malloc(MAXBUF* sizeof(char));
+        split2DArray[i] = (char*)malloc(MAXBUF* sizeof(char));
+        //printf("Size of index %d: %ld\n",i,sizeof(split2DArray[i]));
     }
 
     i = 0;
     char* tok = malloc(MAXBUF);
-    if(numTokens != 0){
+    if(numTokens != 0)
+    {
         tok = strtok(temp,delim);
         strcpy(split2DArray[i], tok);
-        //printf("2D Array: %s\n", split2DArray[i]);
         bool notOverflow = true;
         i++;
-        while(tok != NULL && notOverflow){
-            //printf("I: %d\n", i);
+        while(tok != NULL && notOverflow)
+        {
             tok = strtok(NULL, " ");
-            //printf("TOK: %s\n", tok);
             strcpy(split2DArray[i], tok);
-            //printf("2D Array: %s\n", split2DArray[i]);
             i++;
             if(i > numTokens)
             {
@@ -76,9 +79,11 @@ char** split(char *str, char *delim, int* numOfWords)
 
         }
     }
-    else{
+    else
+    {
         strcpy(split2DArray[0],str);
     }
+   // free(tok);
 
     split2DArray[numTokens+1] = NULL;
 
@@ -102,7 +107,8 @@ char** split(char *str, char *delim, int* numOfWords)
 
 bool checkFile(char* fileName)
 {
-    char* tempPath = fileName;
+    char* tempPath = malloc(MAXBUF);
+    strcpy(tempPath,fileName);
     if(fileName[0] != '/'){
         pathFile(fileName);
     }
@@ -113,13 +119,16 @@ bool checkFile(char* fileName)
     if (access(fullpath, F_OK | X_OK) == 0) 
 	{
 		//printf("File exists\n");
+        free(tempPath);
         return true;
 	}
 	else
 	{
 		printf("ERROR: %s not found!\n",tempPath);
+        free(tempPath);
         return false;
 	}
+
 
 
 }

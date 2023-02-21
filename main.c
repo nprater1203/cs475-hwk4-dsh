@@ -26,12 +26,8 @@ int main(int argc, char **argv)
 	char cmdline[MAXBUF]; // stores user input from commmand line
 	bool notDone = true;
 	char cwd[256];
-	char* chPath = malloc(512);
-	char* fullPath = malloc(512);
 	bool isFile = true;
-
 	char **terms;
-
 	int numOfWords = 0;
 	bool amp = false;
 
@@ -40,10 +36,12 @@ int main(int argc, char **argv)
 	{
 		printf("\ndsh> ");
 
- 		fgets(cmdline, MAXBUF, stdin);  // reads up to 256 characters into the buffer
+		// Reads up to 256 characters into the buffer
+ 		fgets(cmdline, MAXBUF, stdin);  
 	
 		bool notOut = true;
 		int i = 0;
+		// Take out the newline
 		while(cmdline[i] != '\0' && notOut){
 			if(cmdline[i] == '\n')
 			{
@@ -64,11 +62,10 @@ int main(int argc, char **argv)
 			}
 			else if(strcmp(terms[0],"cd") == 0)
 			{
-				//printf("Term 1: %sdfnjdfn\n", terms[1]);
 				if(terms[1] != NULL)
 				{
 					getcwd(cwd,sizeof(cwd));
-					//printf("CWD Before: %s\n", cwd);
+					char* chPath = malloc(512);
 
 					strcpy(chPath,cwd);
 					strcat(chPath,"/");
@@ -78,11 +75,11 @@ int main(int argc, char **argv)
 					{
 						printf("Path given is not a directory...");
 					}
+					free(chPath);
 				}
 				else
 				{
 					char* homeDir = getenv("HOME");
-					//printf("Home dir = %s\n", homeDir);
 					chdir(homeDir);
 				}
 		
@@ -93,8 +90,6 @@ int main(int argc, char **argv)
 			}
 			else
 			{
-				printf("In child\n");
-				//printf("0 Term: %s\n", terms[0]);
 				int ind = 0;
 				char lastChar;
 				while(cmdline[ind] != '\0')
@@ -105,56 +100,23 @@ int main(int argc, char **argv)
 					}
 					ind++;
 				}
-				//printf("Last Char = %c\n",lastChar);
-
-				//printf("File: %s\n", cmdline);
-
-				// if(cmdline[0] == '/'){
-				// 	if (access(cmdline, F_OK | X_OK) == 0) 
-				// 	{
-				// 		printf("File exists\n");
-				// 	}
-				// 	else
-				// 	{
-				// 		printf("ERROR FIRST: %s not found!\n",terms[0]);
-				// 	}
-				// }
-				// else
-				// {
-				// 	getcwd(cwd,sizeof(cwd));
-
-				// 	strcpy(fullPath,cwd);
-				// 	strcat(fullPath,"/");
-				// 	strcat(fullPath,terms[0]);
-				// 	if (access(cmdline, F_OK | X_OK) == 0) 
-				// 	{
-				// 		printf("File exists\n");
-				// 	}
-				// 	else
-				// 	{
-				// 		printf("ERROR: %s not found!\n",terms[0]);
-				// 	}
-
-				// }
 
 				if(lastChar == '&')
 				{
-						//printf("IN HERE");
 					amp = true;
 					terms[ind-1] = NULL;
 					//printf("File here: %s\n", cmdline);
 					isFile = checkFile(terms[0]);
 					//printf("isFile = %d", isFile);
 				}
-
-				//char* tok = malloc(256); 
-				//tok = strtok(cmdline," ");
 				if(isFile)
 				{
 					int pid = fork();
 					if(pid)
 					{
-						printf("parent waiting\n");
+						// Parent 
+
+						//printf("parent waiting\n");
 						if(!amp)
 						{
 							wait(&pid);
@@ -163,50 +125,47 @@ int main(int argc, char **argv)
 					}
 					else
 					{
-						printf("child running\n");
+						// Child
+
+						//printf("child running\n");
 						fflush(stdin);
-						//sleep(1);
 
-						// // printf("0 Term: %s\n", terms[0]);
-
-						
-						// }
 						if(strcmp(terms[0],"ls") == 0 )
 						{					
 							char* path = "/bin/ls";
-							// for(int b = 0; b <= numOfWords; b++)
-							// {
-							// 	printf("%d Term: %s\n", b, terms[b]);
-							// }
-							execv(path,terms);
+							if(execv(path,terms) != 0)
+							{
+								printf("Error: Invalid command\n");
+							}
 						}
 						else if(strcmp(terms[0],"cat") == 0)
 						{
 							char* path = "/bin/cat";
-							// if(terms[1][0] != '/')
-							// {
-							// 	pathFile(terms[1]);
-							// }
 							if(execv(path, terms) != 0)
 							{
-								printf("File given does not exist");
+								printf("File given does not exist\n");
 							}
 						}
 						else if(strcmp(terms[0],"gcc") == 0)
 						{
+							//printf("GCC HERE\n");
 							char* path = "/bin/gcc";
-							execv(path,terms);
+							if(execv(path,terms) != 0)
+							{
+								printf("ERROR: Invalid command\n");
+							}
 						}
 						else
 						{
-							//printf("In here");
 							if(checkFile(terms[0]))
 							{
-								execv(terms[0],terms);
+								if(execv(terms[0],terms) != 0)
+								{
+									printf("Error: Invalid Command");
+								};
 							}
-
 						}
-							
+						
 						exit(0);
 
 					}
@@ -215,9 +174,8 @@ int main(int argc, char **argv)
 			}	
 		}
 	}
-	free(chPath);
-	free(fullPath);
 
+	
 	for(int a = 0; a <= numOfWords; a++)
 	{
 		free(terms[a]);
@@ -227,35 +185,4 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
-
-					
-						// getcwd(cwd,sizeof(cwd));
-
-						// char* fullPath = malloc(512);
-						// strcpy(fullPath,cwd);
-						// strcat(fullPath,"/");
-						// strcat(fullPath,cmdline);
-
-
-						// printf("Full Path: %s\n",fullPath);
-						// if (access(fullPath, F_OK | X_OK) == 0) 
-						// {
-						// 	printf("File exists\n");
-
-						// 	//exec and fork 
-						// 	execv(terms[0],terms);
-
-
-
-    					// 	// File exists and is executable! Can run!
-						// }
-						// else
-						// {
-						// 	printf("%s not found!\n", cmdline);
-   					 	// 	// No good! File doesn't exist or is not executable!
-    					// 	// Alert user and re-prompt
-						// }
-
-						// free(fullPath);
 					

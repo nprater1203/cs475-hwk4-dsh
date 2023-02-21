@@ -28,6 +28,17 @@
  */
 char** split(char *str, char *delim, int *numOfWords);
 
+/**
+ * Checks to see if the file exists
+ *
+ * @param	*fileName	 Pointer to the name of the file
+ * @return  bool		 True or False
+ */
 bool checkFile(char* fileName);
 
+/**
+ * Get the path of teh file
+ *
+ * @param	*tempPath	 Path of the file
+ */
 void pathFile(char* tempPath);
